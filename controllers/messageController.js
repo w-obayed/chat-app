@@ -35,3 +35,25 @@ export const createNewMessage = asynsHandler(async (req, res) => {
     .status(201)
     .json({ data: saveMessage, message: "message send successfull!" });
 });
+
+/**
+ * @description get all message
+ * @method GET
+ * @route /api/v1/message/all-message/:chatId
+ * @access public
+ */
+export const getAllMessage = asynsHandler(async (req, res) => {
+  // find all message
+  const allmessage = await Message.find({ chatId: req.params.chatId }).sort({
+    createdAt: 1,
+  });
+
+  //   check message
+  if (allmessage.length === 0) {
+    return res.status(404).json({ message: "message not found!" });
+  }
+
+  res
+    .status(201)
+    .json({ data: allmessage, message: "message fetched successfull!" });
+});
