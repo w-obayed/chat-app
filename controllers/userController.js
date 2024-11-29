@@ -1,45 +1,46 @@
 import asynsHandler from "express-async-handler";
 import bcrypt from "bcrypt";
-import userModel from "../models/userModel.js";
 import { fileDelete, fileUpload } from "../utils/cloudinary.js";
 import { getPublicId, isEmail, isMobile } from "../helpers/helper.js";
-
-/**
- * @description Get all users data
- * @method Get
- * @route /api/v1/user/
- * @access public
- */
-export const getAllUser = asynsHandler(async (req, res) => {
-  // get all user
-  const users = await userModel.find();
-
-  //   check user data
-  if (users.length === 0) {
-    return res.status(404).json({ message: "User data not found" });
-  }
-  res.status(200).json({ users });
-});
+import User from "../models/User.js";
 
 /**
  * @description Get single users data
  * @method GET
- * @route /api/v1/user/:id
+ * @route /api/v1/user/logged-user
  * @access public
  */
 export const getSingleUser = asynsHandler(async (req, res) => {
-  // user id
-  const { id } = req.params;
-
   // get single data
-  const user = await userModel.findById(id);
+  const user = await User.findOne({ _id: req.body.userId });
 
   // not found user
   if (!user) {
-    return res.status(404).json({ message: "User data not found" });
+    return res.status(404).json({ message: "user data not found!" });
   }
 
-  res.status(200).json({ user });
+  res.status(200).json({ user, message: "user fetched successfull!" });
+});
+
+/**
+ * @description Get all users data
+ * @method Get
+ * @route /api/v1/user/all-user
+ * @access public
+ */
+export const getAllUser = asynsHandler(async (req, res) => {
+  // user id
+  const userId = req.body.userId;
+
+  // get all user
+  const users = await User.find({ _id: { $ne: userId } });
+
+  //   check user data
+  if (users.length === 0) {
+    return res.status(404).json({ message: "user data not found!" });
+  }
+
+  res.status(200).json({ users, message: "users fetched successfull!" });
 });
 
 /**
@@ -62,7 +63,7 @@ export const createUser = asynsHandler(async (req, res) => {
   }
 
   // email check
-  const checkEmail = await userModel.findOne({ email });
+  const checkEmail = await User.findOne({ email });
   if (checkEmail) {
     return res.status(400).json({ message: "Email already exists" });
   }
@@ -73,7 +74,7 @@ export const createUser = asynsHandler(async (req, res) => {
   }
 
   // phone check
-  const checkPhone = await userModel.findOne({ phone });
+  const checkPhone = await User.findOne({ phone });
   if (checkPhone) {
     return res.status(400).json({ message: "Phone number already exists" });
   }
@@ -89,7 +90,7 @@ export const createUser = asynsHandler(async (req, res) => {
   const hashPass = await bcrypt.hash(password, 10);
 
   // create new user
-  const user = await userModel.create({
+  const user = await User.create({
     name,
     email,
     phone,
@@ -111,7 +112,7 @@ export const deleteUser = asynsHandler(async (req, res) => {
   const { id } = req.params;
 
   // now delete user from database
-  const user = await userModel.findByIdAndDelete(id);
+  const user = await User.findByIdAndDelete(id);
 
   // delete cloud file
   await fileDelete(getPublicId(user.photo));
@@ -144,7 +145,7 @@ export const updateUser = asynsHandler(async (req, res) => {
   }
 
   // update data
-  const user = await userModel.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     id,
     { name, email, phone },
     { new: true }

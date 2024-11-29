@@ -4,6 +4,9 @@ import nodemon from "nodemon";
 import dotenv from "dotenv";
 import mongoDBconnect from "./config/mongoDB.js";
 import userRouter from "./routes/user.js";
+import authRouter from "./routes/auth.js";
+import chatRouter from "./routes/chat.js";
+import messageRouter from "./routes/message.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
 // initialization
@@ -22,6 +25,9 @@ app.use(express.static("public"));
 
 // routing
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/chat", chatRouter);
+app.use("/api/v1/message", messageRouter);
 
 // error handler
 app.use(errorHandler);

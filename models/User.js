@@ -11,16 +11,12 @@ const userSchema = mongoose.Schema(
     email: {
       type: String,
       trim: true,
-      unique: true,
-    },
-    phone: {
-      type: String,
-      trim: true,
-      unique: true,
     },
     password: {
       type: String,
       required: true,
+      select: false,
+      minlength: 8,
     },
     photo: {
       type: String,
@@ -55,4 +51,4 @@ const userSchema = mongoose.Schema(
 );
 
 // export default
-export default mongoose.model("userModel", userSchema);
+export default mongoose.model("User", userSchema);
