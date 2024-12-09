@@ -8,6 +8,7 @@ import authRouter from "./routes/auth.js";
 import chatRouter from "./routes/chat.js";
 import messageRouter from "./routes/message.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import cors from "cors";
 
 // initialization
 const app = express();
@@ -15,6 +16,15 @@ dotenv.config();
 
 // environment vari
 const PORT = process.env.PORT || 9090;
+
+// cross platform
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
 
 // set middlewers
 app.use(express.json());

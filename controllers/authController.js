@@ -15,18 +15,19 @@ export const signup = asynsHandler(async (req, res) => {
 
   // validation
   if (!name || !email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.json({ message: "All fields are required" });
   }
 
   // valid email
   if (!isEmail(email)) {
-    return res.status(400).json({ message: "Invalid email address" });
+    return res.json({ message: "Invalid email address" });
   }
 
   // email check
   const checkEmail = await User.findOne({ email });
+
   if (checkEmail) {
-    return res.status(400).json({ message: "Email already exists" });
+    return res.json({ message: "Email already exists" });
   }
 
   // hash password
@@ -52,20 +53,20 @@ export const login = asynsHandler(async (req, res) => {
 
   // validation
   if (!email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.json({ message: "All fields are required" });
   }
 
   // valid email
   if (!isEmail(email)) {
-    return res.status(400).json({ message: "Invalid email address" });
+    return res.json({ message: "Invalid email address" });
   }
 
   // find user
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("password");
 
   //  check user
   if (!user) {
-    return res.status(400).json({ message: "user not exists!" });
+    return res.json({ message: "user not exists!" });
   }
 
   //   password compare
@@ -73,7 +74,7 @@ export const login = asynsHandler(async (req, res) => {
 
   //   password check
   if (!isvalid) {
-    return res.status(400).json({ message: "wrong password!" });
+    return res.json({ message: "wrong password!" });
   }
 
   //   create jwt
